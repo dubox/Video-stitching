@@ -1,12 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Video-stitching</title>
 <style>
 body {margin:0;padding:0;}
-#_content {position: relative;width:800px;height:340px;border:solid 0px #000;}
-#_content canvas{position:absolute;}
+*{-webkit-user-select:none;-moz-user-select:none;user-select:none;-o-user-select:none;-ms-user-select:none;}
+#_content {position: relative;height:340px;border:solid 1px #000;}
+#_content canvas{position:absolute;cursor: pointer;}
+#_content div{position:absolute;z-index:-1;border:solid 0px #000;}
 </style>
 <script src="jquery2.0.2.js"></script>
 <script src="appframework.min.js1"></script>
 <script src="drag.js"></script>
-
+</head>
+<body>
 <video id="video" width="800" autoplay="" loop="" style="display:none">
 			<source src="textures/oceans.mp4" type="video/mp4; codecs=&quot;avc1.42E01E, mp4a.40.2&quot;">
 			
@@ -16,29 +24,29 @@ body {margin:0;padding:0;}
 
 
 </div>
-
+</body>
+</html>
 <script>
 				var video = document.getElementById( 'video' );
 				var _content = document.getElementById( '_content' );
-				var row = 3;	//
-				var cos = 5;
-				var videoW = video.width;
-				var videoH = 340;
+				
+				//视频块的行数和列数
+				var row = 4;	//
+				var cos = 8;
+				
+				//获取视频的尺寸 亦作为_content容器的尺寸
+				var videoW = $('#video').width();	
+				var videoH = $('#video').height();
+				
+				//视频块的尺寸 亦作为容器格子（#_content div）的大小
 				var videoBlockW = videoW/cos;
 				var videoBlockH = videoH/row;
 				
-				for(var j=0;j<row;j++){
-					for(var i=0;i<cos;i++){
-						videoBlock(-i*(videoBlockW),-j*(videoBlockH));
-					}
-				}
 				
 				
 				
-
-
-
 function videoBlock(x,y){
+
 	var image = document.createElement( 'canvas' );
 	_content.appendChild( image );
 	image.width  = videoBlockW;
@@ -49,12 +57,49 @@ function videoBlock(x,y){
 	
 	
 	var t=window.setInterval(function() {
+		//从 x,y 位置开始 以 videoW*videoH 的大小 将视频帧绘制到canvas上
 		imageContext.drawImage( video, x, y ,videoW ,videoH);
 	},50);
 }			
 
 $(function(){
-	$('#_content canvas').each(function(){$(this)._drag(0,{drag_start:0,draging:0,drag_stop:0});});
+
+	for(var j=0;j<row;j++){
+		for(var i=0;i<cos;i++){
+			videoBlock(-i*(videoBlockW),-j*(videoBlockH));
+			$('#_content').append('<div style="top:'+j*videoBlockH+'px;left:'+i*videoBlockW+'px;width:'+videoBlockW+'px;height:'+videoBlockH+'px;"></div>');
+		}
+	}
+	$('#_content').css({'width':videoW+'px','height':videoH+'px'});
+	
+	
+	$('#_content canvas').each(function(){$(this)._drag(0,{drag_start:0,draging:function(obj){
+	
+		//计算当前拖动块左上角所在的行和列
+		window.rawNow = Math.ceil(parseInt(obj.css("top"))/videoBlockW);
+		window.cosNow = Math.ceil(parseInt(obj.css("left"))/videoBlockW);
+		
+		//当前拖动块左上角所在div的index
+		window.siteNow = (window.rawNow-1)*cos + window.cosNow - 1;
+		
+		//改变当前div的背景色
+		$('#_content div').css('background','');
+		if(window.rawNow > 0 && window.rawNow <= row && window.cosNow > 0 && window.cosNow <= cos){
+			$('#_content div').eq(window.siteNow).css('background','#a23');
+		}
+	
+	
+	},drag_stop:function(obj){
+		$('#_content div').css('background','');
+		
+		//如果当前拖动块在格子中 则加吸附效果
+		if(window.rawNow > 0 && window.rawNow <= row && window.cosNow > 0 && window.cosNow <= cos){
+			obj.offset($('#_content div').eq(window.siteNow).offset());
+		}
+	}});});
+	
+	
+	
 	
 	windowW = $(window).width();
 	windowH = $(window).height();

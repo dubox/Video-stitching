@@ -1,3 +1,16 @@
+/*!
+ * _drag plugin for jquery
+ * http://www.dubox.org/
+ *
+ * Copyright 2013, 2014 dubox 
+ * 
+ * auth : dubox
+ *
+ * Date: 2014-07-03
+ *
+ * updatelog : 这次更新将var变量改为window对象属性
+ */
+
 $.extend($.fn,{
 					
 	_drag:function(obj,fn_arr,_stop){		//obj:被拖动的对象，$(this):触发事件的对象
