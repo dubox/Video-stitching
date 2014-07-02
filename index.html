@@ -1,0 +1,70 @@
+<style>
+body {margin:0;padding:0;}
+#_content {position: relative;width:800px;height:340px;border:solid 0px #000;}
+#_content canvas{position:absolute;}
+</style>
+<script src="jquery2.0.2.js"></script>
+<script src="appframework.min.js1"></script>
+<script src="drag.js"></script>
+
+<video id="video" width="800" autoplay="" loop="" style="display:none">
+			<source src="textures/oceans.mp4" type="video/mp4; codecs=&quot;avc1.42E01E, mp4a.40.2&quot;">
+			
+</video>
+
+<div id="_content">
+
+
+</div>
+
+<script>
+				var video = document.getElementById( 'video' );
+				var _content = document.getElementById( '_content' );
+				var row = 3;	//
+				var cos = 5;
+				var videoW = video.width;
+				var videoH = 340;
+				var videoBlockW = videoW/cos;
+				var videoBlockH = videoH/row;
+				
+				for(var j=0;j<row;j++){
+					for(var i=0;i<cos;i++){
+						videoBlock(-i*(videoBlockW),-j*(videoBlockH));
+					}
+				}
+				
+				
+				
+
+
+
+function videoBlock(x,y){
+	var image = document.createElement( 'canvas' );
+	_content.appendChild( image );
+	image.width  = videoBlockW;
+	image.height  = videoBlockH;
+	
+
+	var imageContext = image.getContext( '2d' );
+	
+	
+	var t=window.setInterval(function() {
+		imageContext.drawImage( video, x, y ,videoW ,videoH);
+	},50);
+}			
+
+$(function(){
+	$('#_content canvas').each(function(){$(this)._drag(0,{drag_start:0,draging:0,drag_stop:0});});
+	
+	windowW = $(window).width();
+	windowH = $(window).height();
+	for(var n=0;n<row*cos;n++){
+		$('#_content canvas').eq(n).css({'left':Math.ceil(Math.random()*(windowW-videoBlockW))+'px','top':Math.ceil(Math.random()*(windowH-videoBlockH))+'px'});
+	}
+});
+
+
+</script>
+
+
+</div>
