@@ -53,7 +53,7 @@ $.extend($.fn,{
 					window.obj.css({left:_left+'px',top:_top+'px'});
 					
 					if(fn_arr.draging){
-						fn_arr.draging(window.obj);
+						fn_arr.draging(window.obj,e);
 					}
 				}
 			});

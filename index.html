@@ -15,7 +15,7 @@ body {margin:0;padding:0;}
 <script src="drag.js"></script>
 </head>
 <body>
-<video id="video" width="800" autoplay="" loop="" style="display:none">
+<video id="video" width="900" autoplay="" loop="" style="display:none">
 			<source src="textures/oceans.mp4" type="video/mp4; codecs=&quot;avc1.42E01E, mp4a.40.2&quot;">
 			
 </video>
@@ -31,8 +31,8 @@ body {margin:0;padding:0;}
 				var _content = document.getElementById( '_content' );
 				
 				//视频块的行数和列数
-				var row = 4;	//
-				var cos = 8;
+				var row = 3;	//
+				var cos = 6;
 				
 				//获取视频的尺寸 亦作为_content容器的尺寸
 				var videoW = $('#video').width();	
@@ -73,19 +73,26 @@ $(function(){
 	$('#_content').css({'width':videoW+'px','height':videoH+'px'});
 	
 	
-	$('#_content canvas').each(function(){$(this)._drag(0,{drag_start:0,draging:function(obj){
-	
-		//计算当前拖动块左上角所在的行和列
-		window.rawNow = Math.ceil(parseInt(obj.css("top"))/videoBlockW);
-		window.cosNow = Math.ceil(parseInt(obj.css("left"))/videoBlockW);
+	$('#_content canvas').each(function(){$(this)._drag(0,{drag_start:function(obj){
 		
-		//当前拖动块左上角所在div的index
+		//设置当前视频块的 显示层级为最高
+		$('#_content canvas').css('z-index','0');
+		obj.css('z-index','500');
+		
+	},draging:function(obj,e){
+	
+		//计算当前鼠标指针所在的行和列
+		var _contentOffset = $('#_content').offset();
+		window.rawNow = Math.ceil((e.pageY-_contentOffset.top)/videoBlockW);
+		window.cosNow = Math.ceil((e.pageX-_contentOffset.left)/videoBlockW);
+		
+		//当前鼠标指针所在div（格子）的index
 		window.siteNow = (window.rawNow-1)*cos + window.cosNow - 1;
 		
 		//改变当前div的背景色
 		$('#_content div').css('background','');
 		if(window.rawNow > 0 && window.rawNow <= row && window.cosNow > 0 && window.cosNow <= cos){
-			$('#_content div').eq(window.siteNow).css('background','#a23');
+			$('#_content div').eq(window.siteNow).css('background','#7a3');
 		}
 	
 	
